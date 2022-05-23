@@ -1,6 +1,6 @@
 # DLC-TPU-GIT
 
-Implementaci{on de un Motor de Búsqueda basado en el Modelo Vectorial en el marco del Trabajo Práctico Integrador correspondiente a 
+Implementación de un Motor de Búsqueda basado en el Modelo Vectorial en el marco del Trabajo Práctico Integrador correspondiente a 
 la materia Diseño de Lenguajes de Consulta de 4t año
 de la carrera de Ingeniería en Sistemas de Información, Universidad Tecnológica Nacional Facultad Regional de Córdoba (Argentina).
 
