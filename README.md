@@ -6,4 +6,5 @@ de la carrera de Ingeniería en Sistemas de Información, Universidad Tecnológi
 
 Se adjuntan consignas y resumen del Modelo Vectorial para Motores de Búsqueda
 [Trabajo Práctico Único [Motor de Búsqueda - Modelo Vectorial].pdf](https://github.com/valentinogiardino/DLC-TPU-GIT/files/8758396/Trabajo.Practico.Unico.Motor.de.Busqueda.-.Modelo.Vectorial.pdf)
+
 [Resumen Motor de Búsqueda - Modelo Vectorial.pdf](https://github.com/valentinogiardino/DLC-TPU-GIT/files/8758398/Resumen.Motor.de.Busqueda.-.Modelo.Vectorial.pdf)
