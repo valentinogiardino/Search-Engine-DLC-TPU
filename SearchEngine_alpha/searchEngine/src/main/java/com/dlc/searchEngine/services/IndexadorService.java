@@ -31,12 +31,15 @@ public class IndexadorService {
 
     @Autowired
     private IndexadorRepository indexadorRepository;
+    @Autowired
+    private ConsultaService consultaService;
 
 
 
 
     public void indexarDocumentos(String path1)
     {
+        tablaPosteo.clear();
         this.path = path1;
         Hashtable<String, DBDocumentos> tablaDocumentosEnBase = indexadorRepository.obtenerDocumentos();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(path))) {
@@ -158,6 +161,8 @@ public class IndexadorService {
 
     public boolean save() throws SQLException {
         boolean exito = indexadorRepository.save2(tablaPosteo, tablaDocumentos, lista);
+        consultaService.obtenerDocumentos();
+        consultaService.obtenerVocabulario();
         return exito;
     }
 

@@ -175,7 +175,7 @@ public class IndexadorRepository {
 
             }
             else{
-                idTerm = idTerm -1;
+                //idTerm = idTerm -1;
                 DBTerminos2 terminoQueYaExiste = tablaTerminos.get(termino);
                 int idActual = terminoQueYaExiste.getId();
                 int maxTfActual = terminoQueYaExiste.getMaxTf();

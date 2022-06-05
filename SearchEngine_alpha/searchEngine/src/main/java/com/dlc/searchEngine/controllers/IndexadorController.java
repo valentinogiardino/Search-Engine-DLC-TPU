@@ -21,7 +21,7 @@ public class IndexadorController {
     public String getTerminos(@RequestBody String path) throws SQLException {
         indexadorService.indexarDocumentos(path);
         boolean exito = indexadorService.save();
-        if (exito) { return "Insercion realizada";}
+        if (exito) {return "Insercion realizada";}
         return "Hubo un error en la insersion";
 
     }
