@@ -40,6 +40,8 @@ public class IndexadorService {
     public void indexarDocumentos(String path1)
     {
         tablaPosteo.clear();
+        lista.clear();
+
         this.path = path1;
         Hashtable<String, DBDocumentos> tablaDocumentosEnBase = indexadorRepository.obtenerDocumentos();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(path))) {

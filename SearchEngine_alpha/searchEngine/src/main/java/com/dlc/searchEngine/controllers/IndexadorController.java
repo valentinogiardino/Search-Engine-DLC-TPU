@@ -2,14 +2,12 @@ package com.dlc.searchEngine.controllers;
 
 import com.dlc.searchEngine.services.IndexadorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/indexar")
 public class IndexadorController {
 
