@@ -38,10 +38,13 @@ public class ConsultaService {
     @Getter@Setter
     private int cantidadAMostrar = 10;      //R por defecto (cantidad de documentos a traer como maximo por termino en la consulta)
 
-    String folderPath = "E:/UTN-FRC/Cuarto Año/DLC/TPU/DocumentosTP1/";     //Path del proyecto donde tendremos los archivos
+    String folderPath = "C:/Users/valen/Desktop/DLC/DLC/TPU/DocumentosTP1/";     //Path del proyecto donde tendremos los archivos
 
 
-
+    /**
+     * Genera una HashTable con todos los terminos en la BD.
+     * LLama terminoRepository para que se encargue del acceso a la BD.
+     */
     public List<DBTerminos2> obtenerVocabulario() {
 
         List<DBTerminos2> listaTerminos = terminoRepository.findAll();
@@ -53,7 +56,10 @@ public class ConsultaService {
 
     }
 
-
+    /**
+     * Genera una HashTable con todos los documentos en la BD.
+     * LLama documentoRepository para que se encargue del acceso a la BD.
+     */
     public List<DBDocumentos> obtenerDocumentos() {
 
         List<DBDocumentos> listaDocumentos = documentoRepository.findAll();
@@ -65,7 +71,10 @@ public class ConsultaService {
 
     }
 
-
+    /**
+     * Metodo que se encarga del procesamiento de una consulta.
+     * @return la lista de los resultados mas relevantes con respecto a la consulta, ordenados por orden de relevancia.
+     */
     public List<ResultadoConsulta> procesarConsulta(String consulta) {
         //Valido que tenga las HashTables cargadas, sino las cargo.
         if (tablaTerminos.size() == 0) {

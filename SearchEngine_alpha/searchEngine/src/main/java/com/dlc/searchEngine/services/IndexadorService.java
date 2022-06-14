@@ -21,36 +21,40 @@ import java.util.*;
 public class IndexadorService {
 
     private Hashtable<String, Hashtable<String, Integer>> tablaPosteo = new Hashtable<>();//HASHTABLE PARA CONTENER LA TABLA DE POSTEO
-    private String path = "E:\\UTN-FRC\\Cuarto Año\\DLC\\TPU\\nuevosDocs\\";
+    private String path;
+    private String pathMuestra = "C:\\Users\\valen\\Desktop\\DLC\\DLC\\TPU\\DocumentosTP1\\";
+    private String pathCarpetaTemporal = "C:\\Users\\valen\\Desktop\\DLC\\DLC\\TPU\\docPrueba\\";
     private String documento = "";
-    private ArrayList<String> lista= new ArrayList();
+    private ArrayList<String> lista= new ArrayList();       //LISTA DE LOS DOCUMENTOS QUE ESTAN SIENDO PROCESADOS
     private Hashtable<String, Integer> tablaDocumentos = new Hashtable<>();
     private Hashtable<String, DBTerminos2> tablaTerminos = new Hashtable<>();
 
 
-    private final Path rootFolder = Paths.get("uploads");
-
-
+    //INYECCION DE DEPENDENCIAS
     @Autowired
     private IndexadorRepository indexadorRepository;
     @Autowired
     private ConsultaService consultaService;
 
-
-    //Copia los documentos indexados a la carpeta que usa la Consulta para mostrar y descargar los resultados
+    /**
+     * Copia los documentos indexados a la carpeta que usa la Consulta para mostrar y descargar los resultados
+     * @param origen el path de la carpeta a indexar, que en este caso será el de la carpeta temporal.
+     */
     private void copiarACarpeta(Path origen) throws IOException {
 
-        Path destino = Path.of(this.path);
+        Path destino = Path.of(this.pathMuestra);
         try {
             Path copiar = Files.copy(origen, destino.resolve(origen.getFileName()), StandardCopyOption.REPLACE_EXISTING);
         }catch (IOException ex){
             System.out.println(ex.getMessage());
         }
-
-
     }
 
-
+    /**
+     * Procesa los archivos y llama al metodo para genera la tabla de poseto.
+     * El archivo solo será procesado si nunca antes fue insertado.
+     * @param path1 el path de la carpeta a indexar, que en este caso será el de la carpeta temporal.
+     */
     public void indexarDocumentos(String path1)
     {
         tablaPosteo.clear();        //Limpia la tabla de posteo por si hubo una indexacion anterior
@@ -123,6 +127,12 @@ public class IndexadorService {
         }
     }
 
+
+    /**
+     * Genera la nueva entrada para un termino. Es decir el documento en el que apareció el termino por primera vez
+     * en esta tabla de posteo, y lo inicializa con tf 1.
+     * @param conjuntoEntradasPosteo el conjunto de entradas posteo del termino que se recibe vacia.
+     */
     private void crearNuevaEntradaParaElTermino(Hashtable<String, Integer> conjuntoEntradasPosteo )
     {
         conjuntoEntradasPosteo.put(documento, 1);                          //SE AGREGA LA ENTRADA AL CONJUNTO
@@ -146,17 +156,24 @@ public class IndexadorService {
 
 
 
-    //Toma una lista de archivos y los indexa
+    /**
+     * Metodo para indexar nuevos documentos.
+     * Primero copia los archivos a una carpeta temporal.
+     * Procede a generar la tabla de posteo para esa carpeta temporal.
+     * Finalmente inserta la tabla de posteo generada en la BD.
+     * @param files el conjunto de archivos a indexar a la BD.
+     * @return un boolean según el éxito de toda la operación.
+     */
     public boolean saveFile(List<MultipartFile> files) throws Exception{
         boolean exito;
         for (MultipartFile file: files){
             this.saveFile(file);
         }
-        this.indexarDocumentos("E:\\UTN-FRC\\Cuarto Año\\DLC\\TPU\\docPrueba\\");
+        this.indexarDocumentos(pathCarpetaTemporal);
 
         exito = this.save();    //Se procede a insertar en la BD
         if (exito){
-            File carpetaTemporal = new File("E:\\UTN-FRC\\Cuarto Año\\DLC\\TPU\\docPrueba\\");
+            File carpetaTemporal = new File(pathCarpetaTemporal);
             for (File subfile: carpetaTemporal.listFiles())
             {
                 subfile.delete();       //Se borran los archivos de la carpeta temporal
@@ -167,14 +184,21 @@ public class IndexadorService {
         return exito;
     }
 
-    //Copia el archivo a una carpeta termporal para la indexacion
+    /**
+     * Copia el archivo a indexar en una carpeta temporal.
+     * @param file el archivos a copiar en la carpeta temporal.
+     */
     public void saveFile(MultipartFile file) throws Exception{
         String fileName = file.getOriginalFilename();
-        file.transferTo(new File("E:\\UTN-FRC\\Cuarto Año\\DLC\\TPU\\docPrueba\\" + fileName));
+        file.transferTo(new File(pathCarpetaTemporal + fileName));
     }
 
 
-
+    /**
+     * Le pide al indexadorRepository que inserte en la BD la tabla de posteo generada.
+     * Luego fuerza a consultaService a que actualice su información.
+     * @return un boolean según el éxito de toda la operación.
+     */
     public boolean save() throws SQLException {
         boolean exito = indexadorRepository.save2(tablaPosteo, tablaDocumentos, lista);     //llama al metodo del Repositorio para que indexe la tabla de posteo generada
         consultaService.obtenerDocumentos();            //Se actualizan los documentos del sistema
