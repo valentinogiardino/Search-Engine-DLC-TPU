@@ -19,10 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 
-@ApplicationScoped
+@ApplicationScoped      //Persiste durante toda la sesion
 @Service
 public class ConsultaService {
 
+    //Inyeccion de dependencias
     @Autowired
     private TerminoRepository terminoRepository;
     @Autowired
@@ -30,14 +31,14 @@ public class ConsultaService {
     @Autowired
     private EntradaPosteoRepository entradaPosteoRepository;
 
-
+    //Tablas de terminios y documentos
     public Hashtable<String, DBTerminos2> tablaTerminos = new Hashtable<>();
     public Hashtable<Integer, String> tablaDocumentos = new Hashtable<>();
 
     @Getter@Setter
-    private int cantidadAMostrar = 10;
+    private int cantidadAMostrar = 10;      //R por defecto (cantidad de documentos a traer como maximo por termino en la consulta)
 
-    String folderPath = "E:/UTN-FRC/Cuarto Año/DLC/TPU/DocumentosTP1/";
+    String folderPath = "E:/UTN-FRC/Cuarto Año/DLC/TPU/DocumentosTP1/";     //Path del proyecto donde tendremos los archivos
 
 
 
@@ -46,7 +47,7 @@ public class ConsultaService {
         List<DBTerminos2> listaTerminos = terminoRepository.findAll();
 
         for (DBTerminos2 termino : listaTerminos) {
-            tablaTerminos.put(termino.getNombre(), termino);
+            tablaTerminos.put(termino.getNombre(), termino);        //Meto los terminos de la base en una HashTable
         }
         return listaTerminos;
 
@@ -66,44 +67,49 @@ public class ConsultaService {
 
 
     public List<ResultadoConsulta> procesarConsulta(String consulta) {
+        //Valido que tenga las HashTables cargadas, sino las cargo.
         if (tablaTerminos.size() == 0) {
             obtenerVocabulario();
         }
-            if (tablaDocumentos.size() == 0) {
-                obtenerDocumentos();
-            }
-        ArrayList<DBTerminos2> listaTerminosEnConsulta = new ArrayList<>();
+        if (tablaDocumentos.size() == 0) {
+            obtenerDocumentos();
+        }
+
+
+        ArrayList<DBTerminos2> listaTerminosEnConsulta = new ArrayList<>();     //ArrayList que contendrà los terminos de la consulta
         Scanner scanner = new Scanner(consulta);
         scanner.useDelimiter("[^\\w]+");
 
         while (scanner.hasNext()) {
             String nuevoTermino = scanner.next().toLowerCase();
             if (tablaTerminos.containsKey(nuevoTermino)) {
-                listaTerminosEnConsulta.add(tablaTerminos.get(nuevoTermino));
+                //Si tengo el termino en la bd, procedo a obtener sus datos (id, maxTf, nr)
+                listaTerminosEnConsulta.add(tablaTerminos.get(nuevoTermino));   //Agrego el termino en el ArrayList
             }
         }
 
-        Collections.sort(listaTerminosEnConsulta);
-        Hashtable<Integer, Double> tablaResulados = new Hashtable<>();
+        Collections.sort(listaTerminosEnConsulta);      //Ordeno el arrayList por NR (DBTerminos implementa Comparable)
+        Hashtable<Integer, Double> tablaResulados = new Hashtable<>(); //Creo HashTable vacia con los resultados
 
 
         for (DBTerminos2 dbtermino2 : listaTerminosEnConsulta) {
+            //Obtengo las entradas del termino ordenadas de menor a mayor tf
             List<DBEntradasPosteo> listaEntradasDelTermino = entradaPosteoRepository.findByClaveOrderByTfTfDesc(dbtermino2.getId());
             int cont = 0;
-            for (DBEntradasPosteo entradaDelTermino : listaEntradasDelTermino) {
-                int idDoc = entradaDelTermino.getClave().getDocumento();
+            for (DBEntradasPosteo entradaDelTermino : listaEntradasDelTermino) {        //Itero las entradas del termino
+                int idDoc = entradaDelTermino.getClave().getDocumento();        //Obtengo el doc de la entrada
 
-                if (!tablaResulados.containsKey(idDoc)) {
+                if (!tablaResulados.containsKey(idDoc)) {       //Si el documento no habia aparecido antes, lo agrego e inicializco su IR en 0
                     tablaResulados.put(idDoc, 0.0);
                 }
-                double irActual = tablaResulados.get(idDoc);
-                double irNuevo = irActual + (entradaDelTermino.getTf() * Math.log(tablaDocumentos.size() / listaEntradasDelTermino.size()));
-                tablaResulados.replace(idDoc, irNuevo);
-                cont++;
-                if (cont == cantidadAMostrar) {break;}
+                double irActual = tablaResulados.get(idDoc);    //Obtengo el ir actual del Doc
+                double irNuevo = irActual + (entradaDelTermino.getTf() * Math.log(tablaDocumentos.size() / listaEntradasDelTermino.size()));    //Calculo nuevo IR
+                tablaResulados.replace(idDoc, irNuevo);         //Actualizo la tabla de resultados con el nuevo IR del doc
+                cont++;         //Aumento el contador
+                if (cont == cantidadAMostrar) {break;}      //Si iguale la cantidad de documentos a traer por termino, corto.
             }
         }
-        Map sortedMap = valueSort(tablaResulados);
+        Map sortedMap = valueSort(tablaResulados);  //Ordeno los datos de la HashTable
 
         return mostrarResultados(sortedMap);
         //return sortedMap;
@@ -138,6 +144,8 @@ public class ConsultaService {
         return sorted;
     }
 
+
+    //Genera una lista de Resultados Consulta segun los resultados obtenidos de la consulta
     private List<ResultadoConsulta> mostrarResultados(Map<Integer, Double> tablaResultados) {
         Set<Map.Entry<Integer, Double>> pares = tablaResultados.entrySet();
 
@@ -146,7 +154,7 @@ public class ConsultaService {
         {
             String nombreDoc = tablaDocumentos.get(par.getKey());
             listaResultados.add(new ResultadoConsulta(par.getKey(), nombreDoc, par.getValue()));
-            //System.out.println(par.getKey() + "->" + par.getValue());
+
         }
         return listaResultados;
     }
@@ -162,6 +170,8 @@ public class ConsultaService {
         return listaResultadosConsulta;
     }
 
+
+    //Obtiene las primeras dos lineas del archivo recibido como parametro.
     public String obtenerResumen(String path) {
         try {
             BufferedReader lector = new BufferedReader(new FileReader(path));
@@ -187,7 +197,7 @@ public class ConsultaService {
         }
     }
 
-
+    //Segun el modo recibido como parametro, muestra o descarga el archivo
     public void show(String fileName, HttpServletResponse response, String modo) {
 
         if (fileName.indexOf(".doc") > -1) response.setContentType("application/msword");
