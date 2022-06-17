@@ -1,7 +1,11 @@
 package com.dlc.searchEngine.models;
 
 import java.io.File;
-
+/**
+ * Clase para representar los resultados a una consulta.
+ * La consulta mostrara como resultado el nombre del documento, su Indice de relevancia(IR) y un pequeño resumen
+ * del contenido del documento.
+ */
 public class ResultadoConsulta {
     private int id;
     private String nombreDoc;
