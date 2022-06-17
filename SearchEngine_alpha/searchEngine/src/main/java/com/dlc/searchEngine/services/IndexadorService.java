@@ -21,9 +21,10 @@ import java.util.*;
 public class IndexadorService {
 
     private Hashtable<String, Hashtable<String, Integer>> tablaPosteo = new Hashtable<>();//HASHTABLE PARA CONTENER LA TABLA DE POSTEO
+                                                                                            //Key el termino, value otra hashTable pero de las entradas de ese termino(doc, tf)
     private String path;
-    private String pathMuestra = "C:\\Users\\valen\\Desktop\\DLC\\DLC\\TPU\\DocumentosTP1\\";
-    private String pathCarpetaTemporal = "C:\\Users\\valen\\Desktop\\DLC\\DLC\\TPU\\docPrueba\\";
+    private String pathMuestra = "E:\\UTN-FRC\\Cuarto Año\\DLC\\TPU\\DocumentosTP1\\";      //Carpeta que utiliza la ConsultaService para mostrar los resultados
+    private String pathCarpetaTemporal = "E:\\UTN-FRC\\Cuarto Año\\DLC\\TPU\\docPrueba\\";  //CARPETA TEMPORAL PARA GUARDAR LOS DOCUMENTOS NUEVOS QUE SE QUIEREN INDEXAR
     private String documento = "";
     private ArrayList<String> lista= new ArrayList();       //LISTA DE LOS DOCUMENTOS QUE ESTAN SIENDO PROCESADOS
     private Hashtable<String, Integer> tablaDocumentos = new Hashtable<>();

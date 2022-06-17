@@ -38,7 +38,7 @@ public class ConsultaService {
     @Getter@Setter
     private int cantidadAMostrar = 10;      //R por defecto (cantidad de documentos a traer como maximo por termino en la consulta)
 
-    String folderPath = "C:/Users/valen/Desktop/DLC/DLC/TPU/DocumentosTP1/";     //Path del proyecto donde tendremos los archivos
+    String folderPath = "E:\\UTN-FRC\\Cuarto Año\\DLC\\TPU\\DocumentosTP1\\";     //Path del proyecto donde tendremos los archivos
 
 
     /**

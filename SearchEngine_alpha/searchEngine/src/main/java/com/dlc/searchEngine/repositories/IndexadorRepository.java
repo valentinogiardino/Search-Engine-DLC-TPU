@@ -12,7 +12,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.util.*;
-
+/**
+ * Repositorio que contiene toda la lógica para realizar la indexacion e insersion de documentos, terminos y entradas
+ * de posteo a la Base de Datos.
+ */
 @Repository
 public class IndexadorRepository {
 
@@ -24,7 +27,10 @@ public class IndexadorRepository {
 
     private Hashtable<String, DBDocumentos> tablaDocumentosEnBase;
 
-
+    /**
+     * Genera una HashTable con los documentos existentes en la base de datos.
+     * @return la HashTable con los documentos en la base.
+     */
     public Hashtable<String, DBDocumentos> obtenerDocumentos()
     {
         List<DBDocumentos> listaDocumentosEnBase = documentoRepository.findAll();       //OBTENGO LOS DOCUMENTOS DE LA BASE
@@ -37,7 +43,13 @@ public class IndexadorRepository {
     }
 
 
-
+    /**
+     * Metodo para insertar la tabla de posteo generada a la Base de datos.
+     * Se insertan los documentos, los terminos leidos en los mismos y la tabla de posteo generada.
+     * Hace una serie de verificaciones para evitar insertar terminos nuevos si ya fueron cargados. En ese caso, procede
+     * a actualizar los datos de ese termino con los nuevos datos producto de la nueva tabla de posteo generada.
+     * @return un boolean segùn el resultado de toda lo opereacion.
+     */
     @Transactional
     public boolean save2(Hashtable<String, Hashtable<String, Integer>> tablaPosteo, Hashtable<String, Integer> tablaDocumentos, ArrayList<String> lista) throws SQLException {
 
@@ -121,7 +133,7 @@ public class IndexadorRepository {
                 idTerm++;
 
             }
-            else{                           //SI EL TERMINO YA SE ENCONTRABA EN LA BASE
+            else{                           //SI EL TERMINO YA SE ENCONTRABA EN LA BASE, ACTUALIZO SUS DATOS
                 DBTerminos2 terminoQueYaExiste = tablaTerminos.get(termino);        //OBTENGO SUS DATOS
                 int idActual = terminoQueYaExiste.getId();
                 int maxTfActual = terminoQueYaExiste.getMaxTf();
